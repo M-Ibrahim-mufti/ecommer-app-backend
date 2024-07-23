@@ -40,25 +40,28 @@ exports.SignUp = async(req,res) => {
 }
 
 exports.SignIn = async (req,res) => {
-    const user = await Authentication.findOne({Email: req.body.email})
-    console.log(user)
-    const passwordValidation = await bcrypt.compare(req.body.password, user.Password );
-    if (!passwordValidation) {
-        return res.status(402).json({success:false, message: "Password do not Match"})
-    }
-    const payload = {
-        user_id: user._id,
-        UserName: user.UserName,
-        Email:user.Email,
-        Role:user.Role
-    }
+    try {
+        const user = await Authentication.findOne({Email: req.body.email})
+        const passwordValidation = await bcrypt.compare(req.body.password, user.Password );
+        if (!passwordValidation) {
+            return res.status(402).json({message: "Password do not Match"})
+        }
+        const payload = {
+            user_id: user._id,
+            UserName: user.UserName,
+            Email:user.Email,
+            Role:user.Role
+        }
 
-    const accessToken = JWT.sign(payload,process.env.JWT_ACCESS_TOKEN, {expiresIn:'15min'})
-    const refreshToken = JWT.sign(payload,process.env.JWT_REFRESH_TOKEN, {expiresIn:'1day'})
+        const accessToken = JWT.sign(payload,process.env.JWT_ACCESS_TOKEN, {expiresIn:'15min'})
+        const refreshToken = JWT.sign(payload,process.env.JWT_REFRESH_TOKEN, {expiresIn:'1day'})
 
-    res.cookie("AccessToken", accessToken, {maxAge: 15 * 60 * 1000, httpOnly:true, secure:true, sameSite:'lax'})
-    res.cookie('RefreshToken', refreshToken, {maxAge: 24 * 60 * 60 *  1000, httpOnly:true, secure:true, sameSite:'lax'})
-    res.json({success:true, user:payload, message:"User Found"})
+        res.cookie("AccessToken", accessToken, {maxAge: 15 * 60 * 1000, httpOnly:true, secure:true, sameSite:'lax'})
+        res.cookie('RefreshToken', refreshToken, {maxAge: 24 * 60 * 60 *  1000, httpOnly:true, secure:true, sameSite:'lax'})
+        res.json({success:true, user:payload, message:"User Found"})
+    } catch(error) {
+
+    }
 
 }
 
@@ -128,9 +131,9 @@ exports.currentUserDetail = async (req,res) => {
         const user = await Authentication.findOne({
             _id: id 
         })
-        res.status(201).json(user);
+        res.status(201).json({ user ,message:"Date fetched Successfully"});
     } catch (err) {
-        res.status(402).json(err);
+        res.status(402).json({message: "Issue in fetching the data"});
     }
 }
 
@@ -143,18 +146,39 @@ exports.uploadImage = async (req,res) => {
         formData.append('file', fs.createReadStream(img.tempFilePath));
         formData.append('upload_preset', presetName);
         formData.append('folder', 'Ecommerce-website')
-        const response = await axios.post(
-            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-            formData,
-        )
+        const response = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, formData)
         res.status(200).json(response.data.secure_url); 
-    
-
     } catch (error) {
-        res.json(error)
+        res.status(200).json({message:"Error in uploading the Image"});
     }
 }
 
+exports.changePassword = async(req,res) => {
+    try {
+        const user = await Authentication.findOne({
+            _id: req.body.id
+        })
+        if(!user) {
+            return res.status(400).json({message:"User Not Fount"})
+        }
+        const passwordValidation = await bcrypt.compare(req.body.password.currentPassword, user.Password)
+        if(!passwordValidation){
+            return res.status(400).json({message: "Current Password is Incorrect"});
+        }
+        const checkPasswordSimilarity = await bcrypt.compare(req.body.password.newPassword, user.Password)
+        if(checkPasswordSimilarity) {
+            return res.status(400).json({message: 'Current password can not be new password'});
+        }
+        const newPassword = await bcrypt.hash(req.body.password.newPassword, 10);
+        user.Password = newPassword;
+        await user.save();
+        console.log("Saved Successfully");
+        return res.status(200).json({message: "Password Updated Successfully"});
+
+    } catch (error) {
+
+    }
+}
 
 exports.logout = async (req, res) => {
     res.clearCookie('AccessToken', {httpOnly:true, secure:true, sameSite:'lax'});

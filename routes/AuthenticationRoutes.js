@@ -6,10 +6,11 @@ const { verifyToken } = require('../utilities/AuthUtilities');
 router.post('/SignUp', AuthenticationController.SignUp);
 router.post('/SignIn', AuthenticationController.SignIn);
 router.get('/token-refresh',AuthenticationController.refreshToken);
-router.post('/logout', AuthenticationController.logout)
+router.post('/logout', AuthenticationController.logout);
 router.get('/userdetail', AuthenticationController.currentUserDetail);
-router.post('/user/Upload-Image', AuthenticationController.uploadImage)
-router.put('/user/update-profile', AuthenticationController.updateProfile)
+router.post('/user/Upload-Image', AuthenticationController.uploadImage);
+router.put('/user/update-profile', AuthenticationController.updateProfile);
+router.put('/user/change-password', AuthenticationController.changePassword);
 
 
 module.exports = router

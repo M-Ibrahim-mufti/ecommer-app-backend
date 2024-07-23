@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const AuthenticationRoutes = require('./routes/AuthenticationRoutes')
 const ProductRoutes = require('./routes/ProductRoutes')
+const CardRoutes = require('./routes/CardRoutes');
 const cookieParser = require('cookie-parser')
 require('dotenv').config();
 const fileUpload = require('express-fileupload');
@@ -22,6 +23,7 @@ mongoose.connect('mongodb://localhost:27017/Ecommerce-App').then(()=>{console.lo
                 
 App.use('/', AuthenticationRoutes);
 App.use('/', ProductRoutes);
+App.use('/', CardRoutes)
                 
 
 App.listen(5000, ()  => {

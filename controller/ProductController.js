@@ -78,3 +78,18 @@ exports.getAllUserProducts = async(req,res) => {
     console.log(err);
   }
 }
+
+exports.getSingleProducts = async(req,res) => {
+  try {
+    const productId = req.query.id
+    const product = await Product.findById(productId)
+    if(!product) {
+      return res.status(402).json({message: "No Product Found"})
+    }
+    console.log(product)
+    res.status(200).json({product:product, message: "Product Fetched Successfully"})
+  } catch(error) {
+    console.log(error)
+    res.status(500).json({message:"Error from the server please wait and try again" })
+  }
+} 
