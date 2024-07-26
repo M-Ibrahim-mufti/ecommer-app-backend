@@ -86,7 +86,6 @@ exports.getSingleProducts = async(req,res) => {
     if(!product) {
       return res.status(402).json({message: "No Product Found"})
     }
-    console.log(product)
     res.status(200).json({product:product, message: "Product Fetched Successfully"})
   } catch(error) {
     console.log(error)
