@@ -6,8 +6,8 @@ const fs = require('fs')
 
 exports.uploadImage = async (req, res) => {
   const img = req.files.image;
-  const cloudName = 'dbm5vfupw';
-  const presetName = 'MyEcommerceWebsite';
+  const cloudName = process.env.CLOUDINARY_CLOUDNAME;
+  const presetName = process.env.CLOUDINARY_PRESETNAME;
 
   const uploaded_images = img.map( async (file) => {
     const formData = new FormData();

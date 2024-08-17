@@ -10,7 +10,6 @@ require('dotenv').config()
 exports.SignUp = async(req,res) => {
     try{
         const email = req.body.email
-        console.log(email);
 
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const user = new Authentication({
@@ -31,10 +30,9 @@ exports.SignUp = async(req,res) => {
 
         res.cookie("AccessToken", accessToken, {maxAge: 15 * 60 * 1000, httpOnly:true, secure:true, sameSite:'lax'})
         res.cookie('RefreshToken', refreshToken, {maxAge: 24 * 60 * 60 * 1000, httpOnly:true, secure:true, sameSite:'lax'})
-        res.status(201).json({payload, user:payload ,message:"Registered Successfully"})
+        res.status(201).json({success:true, user:payload, message:"Registered Successfully"})
     }
     catch(error) {
-        console.log(error)
         res.status(402).json({message: "Could not save user for some reason"});
     }
 }
@@ -44,7 +42,7 @@ exports.SignIn = async (req,res) => {
         const user = await Authentication.findOne({Email: req.body.email})
         const passwordValidation = await bcrypt.compare(req.body.password, user.Password );
         if (!passwordValidation) {
-            return res.status(402).json({message: "Password do not Match"})
+            return res.status(402).json({message: "Email or Password is Incorrect"})
         }
         const payload = {
             user_id: user._id,
@@ -58,9 +56,9 @@ exports.SignIn = async (req,res) => {
 
         res.cookie("AccessToken", accessToken, {maxAge: 15 * 60 * 1000, httpOnly:true, secure:true, sameSite:'lax'})
         res.cookie('RefreshToken', refreshToken, {maxAge: 24 * 60 * 60 *  1000, httpOnly:true, secure:true, sameSite:'lax'})
-        res.json({success:true, user:payload, message:"User Found"})
+        res.json({success:true, user:payload, message:"Successfully Logged In"})
     } catch(error) {
-
+        res.status(404).json({message:"User Not Found"})
     }
 
 }
@@ -172,7 +170,6 @@ exports.changePassword = async(req,res) => {
         const newPassword = await bcrypt.hash(req.body.password.newPassword, 10);
         user.Password = newPassword;
         await user.save();
-        console.log("Saved Successfully");
         return res.status(200).json({message: "Password Updated Successfully"});
 
     } catch (error) {
