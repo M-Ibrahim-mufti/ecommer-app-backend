@@ -46,6 +46,10 @@ const ProductSchema = mongoose.Schema({
         type: Number,
         required: true
     },
+    ViewCount: {
+        type:Number,
+        default:0,
+    },
     User: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
