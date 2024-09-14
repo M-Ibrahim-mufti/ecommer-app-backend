@@ -110,8 +110,6 @@ exports.getSingleProducts = async(req,res) => {
           {$inc: {ViewCount:1}}, 
           {new:true, runValidators:true}
         )
-      } else {
-        console.log('already -viewed');
       }
     }
     res.status(200).json({product:product, message: "Product Fetched Successfully"})

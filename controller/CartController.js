@@ -5,7 +5,7 @@ exports.addToCart = async(req,res) => {
         const addToCart = new cart(req.body);
         await addToCart.save();
         const getCheckOut = await cart.find({User: req.body.User});
-        res.status(200).json({totalCheckoutProduct:getCheckOut.length, message:'Successfully added to checkout'})
+        res.status(200).json({totalCheckoutProduct:getCheckOut.length,cartedProduct:addToCart, message:'Successfully added to checkout'})
 
     } catch(err) {
         res.status(400)

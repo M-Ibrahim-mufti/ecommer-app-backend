@@ -183,3 +183,7 @@ exports.logout = async (req, res) => {
     res.json({success:true, message:'Successfully Signed Out'})
 }
 
+exports.tokenCall = async(req,res) => {
+    const AT = req.cookies?.AccessToken;
+    console.log(AT)
+}

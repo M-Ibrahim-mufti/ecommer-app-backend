@@ -8,7 +8,7 @@ const AuthenticationRoutes = require('./routes/AuthenticationRoutes')
 const ProductRoutes = require('./routes/ProductRoutes')
 const CardRoutes = require('./routes/CardRoutes');
 const CartRoutes = require('./routes/CartRoutes')
-
+const ReviewRoutes = require('./routes/ReviewRoutes');
 const App = express()
 
 App.use(cookieParser())
@@ -23,11 +23,11 @@ App.use(fileUpload({useTempFiles: true}));
     
 mongoose.connect(process.env.MONGO_CONNECTION_STRING).then(()=>{console.log('MongoDB Connected')})
                 
-App.use('/', AuthenticationRoutes);
+App.use('/', AuthenticationRoutes); 
 App.use('/', ProductRoutes);
 App.use('/', CardRoutes);
 App.use('/', CartRoutes);    
-
+App.use('/', ReviewRoutes);
 App.listen(5000, ()  => {
     console.log("Welcome to backend...")
 })
